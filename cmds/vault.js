@@ -1,4 +1,4 @@
-import { commands } from './kv_cmds/index.js';
+import { commands } from './vault_cmds/index.js';
 
 export default {
     command: 'vault <command>',

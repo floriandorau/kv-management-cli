@@ -38,16 +38,6 @@ export const showConfig = function () {
     console.log(`Your current config is: '${JSON.stringify(config, null, '  ')}'`);
 };
 
-const resolveValue = async (fn)=> {
-    const spinner = ora().start();
-    const response = await fn;
-    if (!response) {
-        spinner.fail();
-        throw Error('no valid response from cluster');
-    }
-    spinner.succeed();
-}
-
 export const getSecret = async function (vaultName, secretName, secretPrefix) {
     const config = readConfig();
     try {        
@@ -65,7 +55,8 @@ export const getSecret = async function (vaultName, secretName, secretPrefix) {
             else if(secretPrefix) {            
                 const allSecrets = await az.listSecrets(vault[vaultName])
 
-                 const filteredSecrets = allSecrets.filter((secret) => (secret.name??'').startsWith(secretPrefix))
+                 const filteredSecrets = allSecrets
+                    .filter((secret) => (secret.name??'').startsWith(secretPrefix))
                     .map(({name, contentType,id}) => ({name, contentType, id}))
 
                 secrets = await Promise.all(
@@ -81,7 +72,7 @@ export const getSecret = async function (vaultName, secretName, secretPrefix) {
 };
 
 
-export const addKeyVault = function (name, vaultName, subscriptionId) {
+export const addVault = function (name, vaultName, subscriptionId) {
     let config = readConfig();
     try {
         if (config && config.vaults) {
@@ -122,5 +113,3 @@ export const addKeyVault = function (name, vaultName, subscriptionId) {
         printError('Error while adding KeyVault', err)                
     }
 };
-
-
