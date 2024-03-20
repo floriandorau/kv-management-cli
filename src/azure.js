@@ -35,19 +35,22 @@ const _runAz = async (
     args,
     options = { parseResponse: true, debug: false }
 ) => {
-    const spinner = ora(message).start();
+    let spinner = null;
+    if (options.debug) {
+        spinner = ora(message).start().str;
+    }
 
     try {
         const response = await exec('az', args, options);
         if (!response) {
-            spinner.fail();
+            spinner && spinner.fail();
             throw Error('no valid response from cluster');
         }
-        spinner.succeed();
+        spinner && spinner.succeed();
 
         return options.parseResponse ? _parseResponse(response) : response;
     } catch (e) {
-        spinner.fail();
+        spinner && spinner.fail();
         throw e;
     }
 };

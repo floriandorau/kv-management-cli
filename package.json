@@ -17,7 +17,8 @@
         "cli-table3": "^0.6.4",        
         "is-online": "^10.0.0",
         "log-symbols": "^6.0.0",
-        "ora": "^8.0.1",        
+        "log-update": "^6.0.0",
+        "ora": "^8.0.1",
         "term-size": "^4.0.0",
         "yaml": "2.4.1",
         "yargs": "^17.7.2"

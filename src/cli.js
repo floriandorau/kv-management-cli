@@ -8,6 +8,7 @@ import {
     writeConfig,
 } from './util/config.js';
 import { printError, printSecrets } from './output.js';
+import ora from 'ora';
 
 export const initConfig = function () {
     const configPath = getConfigPath();
@@ -35,15 +36,59 @@ export const clearConfig = function () {
 
 export const showConfig = function () {
     if (!existsConfig(getConfigPath())) {
-        return console.log(
+        console.log(
             'Config does not exist yet. Please run "init" to create intial configuration.'
         );
+    } else {
+        const config = readConfig();
+        console.log(
+            `Your current config is: '${JSON.stringify(config, null, '  ')}'`
+        );
     }
+};
 
-    const config = readConfig();
-    console.log(
-        `Your current config is: '${JSON.stringify(config, null, '  ')}'`
+const _getSecretByName = async (vault, secretName) => {
+    ora(
+        `Loading secret '${secretName}' from vault '${vault.vaultName}'`
+    ).succeed();
+
+    const errors = [];
+    const updateSecret = printSecrets([{ name: secretName }]);
+    await az
+        .getSecret(secretName, vault)
+        .then(({ value }) => updateSecret(secretName, value))
+        .catch((err) => errors.push(err));
+
+    if (errors.length > 0) {
+        printError('Error while loading secrets', errors);
+    }
+};
+
+const _getSecretByPrefix = async (vault, secretPrefix) => {
+    const spinner = ora(
+        `Loading secrets with prefix '${secretPrefix}' from vault '${vault.vaultName}'`
+    ).start();
+
+    const allSecrets = await az.listSecrets(vault);
+    const filteredSecrets = allSecrets
+        .filter((secret) => (secret.name ?? '').startsWith(secretPrefix))
+        .map(({ name, id }) => ({ name, id }));
+
+    spinner.succeed();
+
+    const errors = [];
+    const updateSecret = printSecrets(filteredSecrets);
+    await Promise.all(
+        filteredSecrets.map(({ name }) => {
+            az.getSecret(name, vault)
+                .then(({ value }) => updateSecret(name, value))
+                .catch((err) => errors.push(err));
+        })
     );
+
+    if (errors.length > 0) {
+        printError('Error while loading secrets', errors);
+    }
 };
 
 export const getSecret = async function (vaultName, secretName, secretPrefix) {
@@ -59,27 +104,11 @@ export const getSecret = async function (vaultName, secretName, secretPrefix) {
                 );
             }
 
-            let secrets = [];
             if (secretName) {
-                const secret = await az.getSecret(secretName, vault[vaultName]);
-                secrets.push(secret);
+                _getSecretByName(vault[vaultName], secretName);
             } else if (secretPrefix) {
-                const allSecrets = await az.listSecrets(vault[vaultName]);
-
-                const filteredSecrets = allSecrets
-                    .filter((secret) =>
-                        (secret.name ?? '').startsWith(secretPrefix)
-                    )
-                    .map(({ name, id }) => ({ name, id }));
-
-                secrets = await Promise.all(
-                    filteredSecrets.map(({ name }) =>
-                        az.getSecret(name, vault[vaultName])
-                    )
-                );
+                _getSecretByPrefix(vault[vaultName], secretPrefix);
             }
-
-            printSecrets(secrets);
         }
     } catch (err) {
         printError('Error while fetching secret', err);
