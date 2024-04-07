@@ -29,20 +29,38 @@ Options:
 
 ## Before you start
 
-### Init aks configuration
+### Init `kv` configuration
 
-Before you can use `kv` you need to set up a application config in your home directory. In order to do so you can use the following command. This will create an empty config file where `kv` will store its configuration.
+Before you can use `kv` you need to set up a application config in your home directory. In order to do so you can use the following command. 
 
 ```bash
 kv config init
 ```
 
-### Add KeyVault to configuration
+This will create an empty config file where `kv` will store its configuration.
 
-At second you need to configure your KeyVaults locally. To add a new Vault with `name` in your configuration you can use the following command.
+### Add KeyVault to local configuration
+
+Next, you need to configure your favorite KeyVaults locally. To add a new Vault with desired `name` in your configuration, use the following command.
 
 ```bash
-aks vault add {name} {vault-name} {subscription-id}
+kv vault add {name} {vault-name} {subscription-id}
 ```
 
 You can add multiple vaults to your configuration. Later you can use name to get `kv vault get {name} {secret-name}`.
+
+```bash
+Usage: kv config <command>
+
+Commands:
+  kv config clear  Clears your current configuration
+  kv config init   Initializes app diretory with empty config.yml
+  kv config show   Prints your current configuration
+
+Options:
+  --version  Show version number                                                                                                                                                                                                                                             [boolean]
+  --help     Show help                                                                                                                                                                                                                                                       [boolean]
+
+Examples:
+  kv config show  prints your current config
+```
