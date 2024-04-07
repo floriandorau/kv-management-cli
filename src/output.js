@@ -11,7 +11,6 @@ export const printSecrets = (secrets) => {
         colWidths: [5, 30, 50],
     });
 
-    
     secrets.forEach(({ name }, idx) => {
         table.push([idx + 1, name, 'Loading ...']);
     });

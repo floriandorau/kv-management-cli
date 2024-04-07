@@ -18,7 +18,7 @@ Run `kv --help` to see how to use it.
 kv <command>
 
 Commands:
-  kv config <command>    Manage KeyVault configuration    
+  kv config <command>    Manage KeyVault configuration
   kv vault <command>     Interact with KeyVault
   kv completion         generate completion script
 
