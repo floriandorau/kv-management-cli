@@ -1,9 +1,9 @@
 .gitignore
-
 .eslintignore
 .eslintrc.yml
+.prettierrc.yaml
 
-.travis.yml
+.github
 
 # Output of 'npm pack'
 *.tgz
