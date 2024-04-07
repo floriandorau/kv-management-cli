@@ -24,9 +24,9 @@
         "yargs": "^17.7.2"
     },
     "scripts": {
-        "start": "node ./bin/aks.js",
-        "lint": "eslint ./src ./bin/aks.js",
-        "lint:fix": "eslint --fix ./src ./bin/aks.js",
+        "start": "node ./bin/kv.js",
+        "lint": "eslint ./src ./bin/kv.js",
+        "lint:fix": "eslint --fix ./src ./bin/kv.js",
         "fmt": "prettier -w ."
     },
     "devDependencies": {
